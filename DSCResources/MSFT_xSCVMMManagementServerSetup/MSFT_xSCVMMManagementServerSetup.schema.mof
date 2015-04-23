@@ -35,4 +35,3 @@ class MSFT_xSCVMMManagementServerSetup : OMI_BaseResource
     [Write, Description("0: Do not opt in to the Customer Experience Improvement Program (CEIP). 1: Opt in to CEIP.")] UInt8 SQMOptIn;
     [Write, Description("0: Do not opt in to Microsoft Update. 1: Opt in to Microsoft Update.")] UInt8 MUOptIn;
 };
-

@@ -9,4 +9,3 @@ class MSFT_xSCVMMConsoleSetup : OMI_BaseResource
     [Write, Description("Port for communication with the VMM management server.")] UInt16 IndigoTcpPort;
     [Write, Description("0: Do not opt in to Microsoft Update. 1: Opt in to Microsoft Update.")] UInt8 MUOptIn;
 };
-
