@@ -114,6 +114,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Versions
 
+### Unreleased
+
 ### 1.2.4.0
 
 * Updated release wich added the following resource 
