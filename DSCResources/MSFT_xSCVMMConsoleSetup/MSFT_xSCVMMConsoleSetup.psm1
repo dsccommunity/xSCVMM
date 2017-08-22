@@ -4,28 +4,32 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.String]
         $ProgramFiles,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoTcpPort = 8100,
 
+        [Parameter()]
         [System.Byte]
         $MUOptIn
     )
@@ -51,11 +55,11 @@ function Get-TargetResource
             throw "Unknown version of Virtual Machine Manager!"
         }
     }
-
-    if(Get-WmiObject -Class Win32_Product | Where-Object {$_.IdentifyingNumber -eq $IdentifyingNumber})
+    Write-Verbose "Checking Win32_Product Class for SCVMM Console"
+    if(Get-CimInstance -ClassName Win32_Product | Where-Object {$_.IdentifyingNumber -eq $IdentifyingNumber})
     {
         $IndigoTcpPort = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft System Center Virtual Machine Manager Administrator Console\Settings" -Name "IndigoTcpPort").IndigoTcpPort
-
+        Write-Verbose "SCVMM Console is present"
         $returnValue = @{
             Ensure = "Present"
             SourcePath = $SourcePath
@@ -65,6 +69,7 @@ function Get-TargetResource
     }
     else
     {
+        Write-Verbose "SCVMM Console is absent"
         $returnValue = @{
             Ensure = "Absent"
             SourcePath = $SourcePath
@@ -78,31 +83,37 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot, either by force or when there are pending changes.
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.String]
         $ProgramFiles,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoTcpPort = 8100,
 
+        [Parameter()]
         [System.Byte]
         $MUOptIn
     )
@@ -180,7 +191,7 @@ function Set-TargetResource
         "Absent"
         {
             # Do not remove console from management server
-            if(!(Get-WmiObject -Class Win32_Product | Where-Object {$_.IdentifyingNumber -eq $MSIdentifyingNumber}))
+            if(!(Get-CimInstance -ClassName Win32_Product | Where-Object {$_.IdentifyingNumber -eq $MSIdentifyingNumber}))
             {
                 # Create install arguments
                 $Arguments = "/x /client"
@@ -204,7 +215,7 @@ function Set-TargetResource
         Remove-Item -Path $TempFile
     }
 
-    if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null)
+    if($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue))
     {
         $global:DSCMachineStatus = 1
     }
@@ -224,32 +235,36 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager",
 
+        [Parameter()]
         [System.String]
         $ProgramFiles,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoTcpPort = 8100,
 
+        [Parameter()]
         [System.Byte]
         $MUOptIn
     )
-
+    Write-Verbose -Message "Testing SCVMM Console Installation"
     $result = ((Get-TargetResource @PSBoundParameters).Ensure -eq $Ensure)
     
     $result

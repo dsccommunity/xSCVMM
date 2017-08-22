@@ -4,105 +4,132 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $vmmService,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UserName,
 
+        [Parameter()]
         [System.String]
         $CompanyName,
 
+        [Parameter()]
         [System.String]
         $ProgramFiles,
 
+        [Parameter()]
         [System.Boolean]
         $ClusterManagementServer,
 
+        [Parameter()]
         [System.Boolean]
         $FirstManagementServer,
 
+        [Parameter()]
         [System.String]
         $CreateNewSqlDatabase = "1",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMachineName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlInstanceName,
 
+        [Parameter()]
         [System.String]
         $SqlDatabaseName = "VirtualManagerDB",
 
+        [Parameter()]
         [System.UInt16]
         $IndigoTcpPort = 8100,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoHTTPSPort = 8101,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoNETTCPPort = 8102,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoHTTPPort = 8103,
 
+        [Parameter()]
         [System.UInt16]
         $WSManTcpPort = 5985,
 
+        [Parameter()]
         [System.UInt16]
         $BitsTcpPort = 443,
 
+        [Parameter()]
         [System.String]
         $CreateNewLibraryShare = "1",
 
+        [Parameter()]
         [System.String]
         $LibraryShareName = "MSSCVMMLibrary",
 
+        [Parameter()]
         [System.String]
         $LibrarySharePath = "%ProgramData%\Virtual Machine Manager Library Files",
 
+        [Parameter()]
         [System.String]
         $LibraryShareDescription = "Virtual Machine Manager Library Files",
 
+        [Parameter()]
         [System.String]
         $TopContainerName,
 
+        [Parameter()]
         [System.String]
         $VmmServerName,
 
+        [Parameter()]
         [System.String]
         $VMMStaticIPAddress,
 
+        [Parameter()]
         [System.Byte]
         $RetainSqlDatabase,
 
+        [Parameter()]
         [System.Byte]
         $ForceHAVMMUninstall,
 
+        [Parameter()]
         [System.Byte]
         $SQMOptIn,
 
+        [Parameter()]
         [System.Byte]
         $MUOptIn
     )
@@ -112,7 +139,7 @@ function Get-TargetResource
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
     $Version = (Get-Item -Path $Path).VersionInfo.ProductVersion
-
+    Write-Verbose -Message "Detected Version as '$($Version)'"
     switch($Version)
     {
         "3.2.7510.0"
@@ -129,9 +156,9 @@ function Get-TargetResource
         }
     }
 
-    if(Get-WmiObject -Class Win32_Product | Where-Object {$_.IdentifyingNumber -eq $IdentifyingNumber})
+    if(Get-CimInstance -Class Win32_Product | Where-Object {$_.IdentifyingNumber -eq $IdentifyingNumber})
     {
-        $vmmServiceUsername = (Get-WmiObject -Class Win32_Service | Where-Object {$_.Name -eq "SCVMMService"}).StartName
+        $vmmServiceUsername = (Get-CimInstance -Class Win32_Service | Where-Object {$_.Name -eq "SCVMMService"}).StartName
         $UserName = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft System Center Virtual Machine Manager Server\Setup\Registration" -Name "UserName").UserName
         $CompanyName = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft System Center Virtual Machine Manager Server\Setup\Registration" -Name "CompanyName").CompanyName
         $ProgramFiles = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft System Center Virtual Machine Manager Server\Setup" -Name "InstallPath").InstallPath
@@ -189,108 +216,137 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot, either by force or when there are pending changes.
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
     param
-    (
-        [parameter(Mandatory = $true)]
+        (
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $vmmService,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UserName,
 
+        [Parameter()]
         [System.String]
         $CompanyName,
 
+        [Parameter()]
         [System.String]
         $ProgramFiles,
 
+        [Parameter()]
         [System.Boolean]
         $ClusterManagementServer,
 
+        [Parameter()]
         [System.Boolean]
         $FirstManagementServer,
 
+        [Parameter()]
         [System.String]
         $CreateNewSqlDatabase = "1",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMachineName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlInstanceName,
 
+        [Parameter()]
         [System.String]
         $SqlDatabaseName = "VirtualManagerDB",
 
+        [Parameter()]
         [System.UInt16]
         $IndigoTcpPort = 8100,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoHTTPSPort = 8101,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoNETTCPPort = 8102,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoHTTPPort = 8103,
 
+        [Parameter()]
         [System.UInt16]
         $WSManTcpPort = 5985,
 
+        [Parameter()]
         [System.UInt16]
         $BitsTcpPort = 443,
 
+        [Parameter()]
         [System.String]
         $CreateNewLibraryShare = "1",
 
+        [Parameter()]
         [System.String]
         $LibraryShareName = "MSSCVMMLibrary",
 
+        [Parameter()]
         [System.String]
         $LibrarySharePath = "%ProgramData%\Virtual Machine Manager Library Files",
 
+        [Parameter()]
         [System.String]
         $LibraryShareDescription = "Virtual Machine Manager Library Files",
 
+        [Parameter()]
         [System.String]
         $TopContainerName,
 
+        [Parameter()]
         [System.String]
         $VmmServerName,
 
+        [Parameter()]
         [System.String]
         $VMMStaticIPAddress,
 
+        [Parameter()]
         [System.Byte]
         $RetainSqlDatabase,
 
+        [Parameter()]
         [System.Byte]
         $ForceHAVMMUninstall,
 
+        [Parameter()]
         [System.Byte]
         $SQMOptIn,
 
+        [Parameter()]
         [System.Byte]
         $MUOptIn
     )
@@ -300,7 +356,7 @@ function Set-TargetResource
     $Path = Join-Path -Path (Join-Path -Path $SourcePath -ChildPath $SourceFolder) -ChildPath "setup.exe"
     $Path = ResolvePath $Path
     $Version = (Get-Item -Path $Path).VersionInfo.ProductVersion
-
+    Write-Verbose -Message "Detected Version as '$($Version)'"
     switch($Version)
     {
         "3.2.7510.0"
@@ -496,7 +552,7 @@ function Set-TargetResource
         Remove-Item -Path $TempFile
     }
 
-    if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null)
+    if($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue))
     {
         $global:DSCMachineStatus = 1
     }
@@ -515,110 +571,137 @@ function Test-TargetResource
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
-    (
-        [parameter(Mandatory = $true)]
+        (
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $vmmService,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $UserName,
 
+        [Parameter()]
         [System.String]
         $CompanyName,
 
+        [Parameter()]
         [System.String]
         $ProgramFiles,
 
+        [Parameter()]
         [System.Boolean]
         $ClusterManagementServer,
 
+        [Parameter()]
         [System.Boolean]
         $FirstManagementServer,
 
+        [Parameter()]
         [System.String]
         $CreateNewSqlDatabase = "1",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlMachineName,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SqlInstanceName,
 
+        [Parameter()]
         [System.String]
         $SqlDatabaseName = "VirtualManagerDB",
 
+        [Parameter()]
         [System.UInt16]
         $IndigoTcpPort = 8100,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoHTTPSPort = 8101,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoNETTCPPort = 8102,
 
+        [Parameter()]
         [System.UInt16]
         $IndigoHTTPPort = 8103,
 
+        [Parameter()]
         [System.UInt16]
         $WSManTcpPort = 5985,
 
+        [Parameter()]
         [System.UInt16]
         $BitsTcpPort = 443,
 
+        [Parameter()]
         [System.String]
         $CreateNewLibraryShare = "1",
 
+        [Parameter()]
         [System.String]
         $LibraryShareName = "MSSCVMMLibrary",
 
+        [Parameter()]
         [System.String]
         $LibrarySharePath = "%ProgramData%\Virtual Machine Manager Library Files",
 
+        [Parameter()]
         [System.String]
         $LibraryShareDescription = "Virtual Machine Manager Library Files",
 
+        [Parameter()]
         [System.String]
         $TopContainerName,
 
+        [Parameter()]
         [System.String]
         $VmmServerName,
 
+        [Parameter()]
         [System.String]
         $VMMStaticIPAddress,
 
+        [Parameter()]
         [System.Byte]
         $RetainSqlDatabase,
 
+        [Parameter()]
         [System.Byte]
         $ForceHAVMMUninstall,
 
+        [Parameter()]
         [System.Byte]
         $SQMOptIn,
 
+        [Parameter()]
         [System.Byte]
         $MUOptIn
     )
-
+    Write-Verbose -Message "Testing if VMM Server is installed"
     $result = ((Get-TargetResource @PSBoundParameters).Ensure -eq $Ensure)
     
     $result

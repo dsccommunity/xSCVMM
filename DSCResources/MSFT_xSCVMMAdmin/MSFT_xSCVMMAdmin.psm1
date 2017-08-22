@@ -4,23 +4,24 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserRole,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SCVMMAdminCredential
     )
-
+    Write-Verbose "Checking System Center User Roles"
     $Ensure = Invoke-Command -ComputerName . -Credential $SCVMMAdminCredential {
         $Ensure = $args[0]
         $Principal = $args[1]
@@ -50,23 +51,24 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserRole,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SCVMMAdminCredential
     )
-
+    Write-Verbose "Setting System Center VMM User Roles"
     Invoke-Command -ComputerName . -Credential $SCVMMAdminCredential {
         $Ensure = $args[0]
         $Principal = $args[1]
@@ -75,6 +77,7 @@ function Set-TargetResource
         {
             "Present"
             {
+                Write-Verbose "Adding Use Roles"
                 if(!(Get-SCUserRole -VMMServer $env:COMPUTERNAME -Name $UserRole | ForEach-Object {$_.Members} | Where-Object {$_.Name -eq $Principal}))
                 {
                     Get-SCUserRole -VMMServer $env:COMPUTERNAME -Name $UserRole | Set-SCUserRole -AddMember $Principal
@@ -82,6 +85,7 @@ function Set-TargetResource
             }
             "Absent"
             {
+                Write-Verbose "Removing Use Roles"
                 if(Get-SCUserRole -VMMServer $env:COMPUTERNAME -Name $UserRole | ForEach-Object {$_.Members} | Where-Object {$_.Name -eq $Principal})
                 {
                     Get-SCUserRole -VMMServer $env:COMPUTERNAME -Name $UserRole | Set-SCUserRole -RemoveMember $Principal
@@ -103,23 +107,24 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Principal,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $UserRole,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SCVMMAdminCredential
     )
-
+    Write-Verbose "Testing User Roles"
     $result = ((Get-TargetResource @PSBoundParameters).Ensure -eq $Ensure)
 
     $result

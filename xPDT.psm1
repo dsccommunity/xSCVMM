@@ -20,12 +20,12 @@ function ThrowInvalidArgumentError
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $errorId,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $errorMessage
@@ -42,7 +42,7 @@ function ResolvePath
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
@@ -91,7 +91,7 @@ function IsRootedPath
 {
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $Path
@@ -112,10 +112,10 @@ function ExtractArguments
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         $functionBoundParameters,
         
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [string[]]
         $argumentNames,
         
@@ -444,7 +444,7 @@ function GetWin32Process
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $Path,
@@ -485,7 +485,7 @@ function GetWin32ProcessOwner
 {
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNull()]
         $Process
     )
@@ -543,7 +543,7 @@ function StartWin32Process
 {
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $Path,
@@ -627,7 +627,7 @@ function WaitForWin32ProcessStart
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $Path,
@@ -654,7 +654,7 @@ function WaitForWin32ProcessEnd
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $Path,
@@ -678,11 +678,11 @@ function NetUse
 {
     param
     (   
-        [parameter(Mandatory)]
+        [Parameter(Mandatory)]
         [string]
         $SourcePath,
         
-        [parameter(Mandatory)]
+        [Parameter(Mandatory)]
         [PSCredential]
         $Credential,
         
