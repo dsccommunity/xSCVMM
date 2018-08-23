@@ -4,25 +4,26 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager\Updates",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
    
-    $Version = (Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -eq "Microsoft System Center Virtual Machine Manager Server (x64)"}).Version
-    
+    $Version = (Get-CimInstance -Class Win32_Product | Where-Object {$_.Name -eq "Microsoft System Center Virtual Machine Manager Server (x64)"}).Version
+    Write-Verbose -Message "Detected Version as '$($Version)'"
     switch($Version)
     {
         "3.2.7510.0"
@@ -54,7 +55,7 @@ function Get-TargetResource
         }
     }
 
-    if($ProductCode -and $PatchID -and (Get-WmiObject -Class Win32_PatchPackage | Where-Object {($_.ProductCode -eq $ProductCode) -and ($_.PatchID -eq $PatchID)}))
+    if($ProductCode -and $PatchID -and (Get-CimInstance -Class Win32_PatchPackage | Where-Object {($_.ProductCode -eq $ProductCode) -and ($_.PatchID -eq $PatchID)}))
     {
         $returnValue = @{
             Ensure = "Present"
@@ -78,27 +79,30 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot, either by force or when there are pending changes.
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager\Updates",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
 
-    $Version = (Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -eq "Microsoft System Center Virtual Machine Manager Server (x64)"}).Version
+    $Version = (Get-CimInstance -Class Win32_Product | Where-Object {$_.Name -eq "Microsoft System Center Virtual Machine Manager Server (x64)"}).Version
        
     switch($Version)
     {
@@ -137,7 +141,7 @@ function Set-TargetResource
         WaitForWin32ProcessEnd -Path $Path -Arguments $Arguments -Credential $SetupCredential
     }
 
-    if((Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue) -ne $null)
+    if($null -ne (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'PendingFileRenameOperations' -ErrorAction SilentlyContinue))
     {
         $global:DSCMachineStatus = 1
     }
@@ -157,23 +161,24 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure = "Present",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
+        [Parameter()]
         [System.String]
         $SourceFolder = "\SystemCenter2012R2\VirtualMachineManager\Updates",
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $SetupCredential
     )
-
+    Write-Verbose -Message "Testing if VMM updates are installed."
     $result = ((Get-TargetResource @PSBoundParameters).Ensure -eq $Ensure)
     
     $result
