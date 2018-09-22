@@ -34,8 +34,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **ProgramFiles**: Installation path for the software, as defined by SCVMM Setup.
 * **ClusterManagementServer**: Boolean specifying if this a clustered Management Server.
 * **FirstManagementServer**: Boolean specifying if this is or is not the first Management Server.
-* **CreateNewSqlDatabase**: { 0 | 1 } 
-0: Use an existing Microsoft SQL Server database. 
+* **CreateNewSqlDatabase**: { 0 | 1 }
+0: Use an existing Microsoft SQL Server database.
 1: Create a new SQL Server database.
 * **SqlMachineName**: (Required) Name of the server that is hosting SQL Server.
 * **SqlInstanceName**: (Required) Name of the new or existing instance of SQL Server.
@@ -46,8 +46,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **IndigoHTTPPort**: Port for communication with Windows PE agent for time synchronization.
 * **WSManTcpPort**: Port for communication with agents on hosts and library servers.
 * **BitsTcpPort**: Port for file transfers to agents on hosts and library servers.
-* **CreateNewLibraryShare**: { 0 | 1 } 
-0: Use an existing library share. 
+* **CreateNewLibraryShare**: { 0 | 1 }
+0: Use an existing library share.
 1: Create a new library share.
 * **LibraryShareName**: Name of the file share to be used or created.
 * **LibrarySharePath**: Location of the existing file share or the new file share to be created.
@@ -55,17 +55,17 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **TopContainerName**: Container for Distributed Key Management.
 * **VmmServerName**: Clustered service name for a highly available VMM management server.
 * **VMMStaticIPAddress**: IP address for the clustered service name for a highly available VMM management server, if you are not using Dynamic Host Configuration Protocol (DHCP).
-* **RetainSqlDatabase**: { 0 | 1 } 
-0: Remove the SQL Server database. 
+* **RetainSqlDatabase**: { 0 | 1 }
+0: Remove the SQL Server database.
 1: Do not remove the SQL Server database.
-* **ForceHAVMMUninstall**: { 0 | 1 } 
-0: Do not force uninstallation if setup.exe cannot verify whether this node is the final node of the highly available installation. 
+* **ForceHAVMMUninstall**: { 0 | 1 }
+0: Do not force uninstallation if setup.exe cannot verify whether this node is the final node of the highly available installation.
 1: Force the uninstallation.
-* **SQMOptIn**: { 0 | 1 } 
-0: Do not opt in to the Customer Experience Improvement Program (CEIP). 
+* **SQMOptIn**: { 0 | 1 }
+0: Do not opt in to the Customer Experience Improvement Program (CEIP).
 1: Opt in to CEIP.
-* **MUOptIn**: { 0 | 1 } 
-0: Do not opt in to Microsoft Update. 
+* **MUOptIn**: { 0 | 1 }
+0: Do not opt in to Microsoft Update.
 1: Opt in to Microsoft Update.
 
 ### xSCVMMConsoleSetup
@@ -76,8 +76,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **SetupCredential**: (Required) Credential to be used to perform the installation.
 * **ProgramFiles**: Installation path for the software.
 * **IndigoTcpPort**: Port for communication with the VMM management server.
-* **MUOptIn**: { 0 | 1 } 
-0: Do not opt in to Microsoft Update. 
+* **MUOptIn**: { 0 | 1 }
+0: Do not opt in to Microsoft Update.
 1: Opt in to Microsoft Update.
 
 ### xSCVMManagementServerUpdate
@@ -105,7 +105,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ### xSCVMMOperationsManagerServer
 
-* **Ensure**: (Key) Ensures that an Operations Manager connection is **Absent** or **Present**. 
+* **Ensure**: (Key) Ensures that an Operations Manager connection is **Absent** or **Present**.
 * **OpsMgrServer**:  (Required) Specifies the fully qualified domain name (FQDN) of the System Center Operations Manager management server to which VMM connects.
 * **EnablePRO**: Indicates whether PRO is enabled for this connection.
 * **EnableMaintenanceModeIntegration**: Indicates whether maintenance mode integration is enabled for this connection.
@@ -118,31 +118,34 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Versions
 
 ### Unreleased
-* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+
+* Update appveyor.yml to use the default template.
+* Added default template files .codecov.yml, .gitattributes, and .gitignore, and
+  .vscode folder.
 
 ### 1.2.4.0
 
-* Updated release wich added the following resource 
+* Updated release wich added the following resource
     - xSCVMMOperationsManagerServer
 * Added /norestart to xSCVMMConsoleUpdate and xSCVMMManagementServerUpdate to allow DSC to control reboots
 * Increased timeout for setup process to start to 60 seconds
 
 ### 1.2.0.0
 
-* Updated release wich added the following resources 
+* Updated release wich added the following resources
     - xSCVMMManagementServerUpdate
     - xSCVMMConsoleUpdate
     - xSCVMMAdmin
 
 ### 1.1.0.0
 
-* Initial release with the following resources 
+* Initial release with the following resources
     - xSCVMMManagementServerSetup
     - xSCVMMConsoleSetup
 
 ## Examples
 
-Two example configurations are included in the Examples folder within the module. 
+Two example configurations are included in the Examples folder within the module.
 Both examples also use the **xSQLServer** module.
 
 ### Single Server Installation
@@ -159,8 +162,8 @@ Both examples require the use of [Windows Management Framework (WMF) 5.0 Preview
 
 Both examples use the exact same Configuration and just modify the behavior based on input ConfigurationData.
 
-In the Examples folder you will see a version of each file with "-TP" appended to the name. 
+In the Examples folder you will see a version of each file with "-TP" appended to the name.
 These are the equivalent examples for deployment of System Center Technical Preview on Windows Server Technical Preview.
 
-Since the System Center 2012 R2 Virtual Machine Manager installer for the management server restarts the Windows Remote Management service, if you are using -Verbose -Wait to see the progress of the configuration you will lose the connection to the VMM server during deployment. 
+Since the System Center 2012 R2 Virtual Machine Manager installer for the management server restarts the Windows Remote Management service, if you are using -Verbose -Wait to see the progress of the configuration you will lose the connection to the VMM server during deployment.
 However, the configuration will continue and complete without further display.
